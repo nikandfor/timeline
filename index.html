@@ -74,7 +74,11 @@
 		let heat = L.heatLayer([
 			[50.5, 30.5],
 			[50.6, 30.4],
-		], { radius: 10 }).addTo(map)
+		], {
+			minOpacity: 0.15,
+			radius: 10,
+			blur: 5,
+		}).addTo(map)
 
 		const go = new Go()
 
