@@ -82,7 +82,7 @@
 
 		const go = new Go()
 
-		WebAssembly.instantiateStreaming(fetch("go/main.wasm"), go.importObject).then((result) => {
+		WebAssembly.instantiateStreaming(fetch("https://r2.nikand.dev/rand/timeline.wasm"), go.importObject).then((result) => {
 			go.run(result.instance);
 		});
 
