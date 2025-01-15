@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="utf-8" />
+	<title>Google Timeline Heatmap</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="theme-color" content="lightgray" />
+	<link rel="canonical" href="/" />
+
+	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+		crossorigin=""/>
+
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+		crossorigin=""></script>
+
+	<!--<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/golang/go/lib/wasm/wasm_exec.js"></script>
+	-->
+
+	<script src="https://r2.nikand.dev/rand/leaflet-heat.js"></script>
+	<script src="https://r2.nikand.dev/rand/wasm_exec.js"></script>
+</head>
+<body>
+	<div id="map"></div>
+	<div id="controls">
+		Choose your Timeline.json file and see where have you been so far. All the processing happens in the browser.
+		<input id="file" type="file">
+	</div>
+	<footer>
+		<a href="https://github.com/nikandfor/timeline">github</a>,
+		hey@nikand.dev
+	</footer>
+	<style>
+		body {
+			height: 100dvh;
+			margin: 0;
+
+			font-size: small;
+		}
+		#map {
+			height: 100%;
+		}
+		#controls {
+			position: absolute;
+			top: 0;
+			right: 0;
+
+			padding: 5px;
+			background: white;
+
+			z-index: 1000;
+		}
+		footer {
+			position: absolute;
+			bottom: 0;
+
+			padding: 5px;
+			background: white;
+
+			z-index: 1000;
+		}
+	</style>
+	<script>
+		let map = L.map('map').setView([51.505, -0.09], 3)
+
+		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		    maxZoom: 19,
+		    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(map);
+
+		let heat = L.heatLayer([
+			[50.5, 30.5],
+			[50.6, 30.4],
+		], { radius: 10 }).addTo(map)
+
+		const go = new Go()
+
+		WebAssembly.instantiateStreaming(fetch("go/main.wasm"), go.importObject).then((result) => {
+			go.run(result.instance);
+		});
+
+		document.getElementById("file").addEventListener("change", async e => {
+			let f = e.target.files[0]
+			const file = await f.arrayBuffer()
+
+			let flat = processTimeline(new Uint8Array(file))
+
+			let points = new Array(flat.length / 2)
+
+			for (let i = 0; i < points.length; i++) {
+				points[i] = L.latLng(flat[2 * i + 0], flat[2 * i + 1])
+			}
+
+			heat.setLatLngs(points)
+		})
+	</script>
+
+	<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e0307907332e4cfba93ac9b836938f39"}'></script>
+
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-J2QQGH9SG2"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+		  gtag('config', 'G-J2QQGH9SG2');
+	</script>
+</body>
+</html>
+
