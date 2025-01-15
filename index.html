@@ -29,10 +29,6 @@
 		Choose your Timeline.json file and see where have you been so far. All the processing happens in the browser.
 		<input id="file" type="file">
 	</div>
-	<footer>
-		<a href="https://github.com/nikandfor/timeline">github</a>,
-		hey@nikand.dev
-	</footer>
 	<style>
 		body {
 			height: 100dvh;
@@ -51,16 +47,7 @@
 			padding: 5px;
 			background: white;
 
-			z-index: 1000;
-		}
-		footer {
-			position: absolute;
-			bottom: 0;
-
-			padding: 5px;
-			background: white;
-
-			z-index: 1000;
+			z-index: 900;
 		}
 	</style>
 	<script>
@@ -79,6 +66,8 @@
 			radius: 10,
 			blur: 5,
 		}).addTo(map)
+
+		map.attributionControl.addAttribution('hey@nikand.dev. <a href="https://github.com/nikandfor/timeline">source code</a>')
 
 		const go = new Go()
 
